@@ -8,13 +8,8 @@ target_compile_features(${PROJECT_NAME} INTERFACE cxx_std_17)
 
 target_include_directories(${PROJECT_NAME}
     INTERFACE
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:include>
-)
-
-target_link_libraries(${PROJECT_NAME}
-   PRIVATE
-   #spdlog::spdlog
 )
 
 add_library(${PROJECT_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
@@ -28,7 +23,7 @@ install(TARGETS ${PROJECT_NAME}
         INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )
 
-install(DIRECTORY include/dadabase
+install(DIRECTORY include/TaskQueue
         DESTINATION include
         COMPONENT Devel
 )

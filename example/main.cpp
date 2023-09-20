@@ -4,6 +4,8 @@
 #include <iostream>
 #include <atomic>
 
+using namespace std::chrono_literals;
+
 std::atomic<bool> gStop{false};
 std::atomic<unsigned> gCounter{0};
 
@@ -16,14 +18,32 @@ void worker(TaskQueue& queue)
     }
 }
 
-void job()
+void job1()
 {
-    using namespace std::chrono_literals;
-    unsigned count = gCounter++;
+    unsigned count = ++gCounter;
 
-    spdlog::info("  [{}] Start job {}", std::hash<std::thread::id>{}(std::this_thread::get_id()), count);
+    spdlog::info("  ['{}' '{}' '{}'] Begin", __PRETTY_FUNCTION__, std::hash<std::thread::id>{}(std::this_thread::get_id()), count);
     std::this_thread::sleep_for(1s);
-    spdlog::info("  [{}] Job done {}", std::hash<std::thread::id>{}(std::this_thread::get_id()), count);
+    spdlog::info("  ['{}' '{}' '{}'] End", __PRETTY_FUNCTION__, std::hash<std::thread::id>{}(std::this_thread::get_id()), count);
+}
+
+void job2(int number)
+{
+  unsigned count = ++gCounter;
+
+  spdlog::info("  ['{}' '{}' '{}'] Begin number={}", __PRETTY_FUNCTION__, std::hash<std::thread::id>{}(std::this_thread::get_id()), count, number);
+  std::this_thread::sleep_for(2s);
+  spdlog::info("  ['{}' '{}' '{}'] End", __PRETTY_FUNCTION__, std::hash<std::thread::id>{}(std::this_thread::get_id()), count);
+}
+
+int job3(int number)
+{
+  unsigned count = ++gCounter;
+
+  spdlog::info("  ['{}' '{}' '{}'] Begin number={}", __PRETTY_FUNCTION__, std::hash<std::thread::id>{}(std::this_thread::get_id()), count, number);
+  std::this_thread::sleep_for(1500ms);
+  spdlog::info("  ['{}' '{}' '{}'] End number={}", __PRETTY_FUNCTION__, std::hash<std::thread::id>{}(std::this_thread::get_id()), count, ++number);
+  return number;
 }
 
 int main()
@@ -33,22 +53,19 @@ int main()
     spdlog::info("About to start consumer from thread {}", std::hash<std::thread::id>{}(std::this_thread::get_id()));
     std::thread workerThread(worker, std::ref(queue));
 
-    const size_t jobs = 5;
-    spdlog::info("About to push {} jobs", jobs);
+    spdlog::info("Push job");
+    auto future1 = queue.postTask(job1);
+    //auto future2 = queue.postTask(job2);
+    //auto future3 = queue.postTask(job3);
 
-    std::vector<std::future<void>> futures;
-    for (size_t i=1; i<=jobs; ++i)
-    {
-      spdlog::info("Push job {}", i);
-      futures.emplace_back(queue.postTask(job));
-    }
+    std::future_status status;
+    do {
+      status = future1.wait_for(333ms);
+      spdlog::info("Waiting for job");
+    } while (status != std::future_status::ready);
 
-    for (size_t i=1; i<=futures.size(); ++i)
-    {
-      spdlog::info("Waiting for job {}", i);
-      futures.at(i-1).get();
-      spdlog::info("Job {} done", i);
-    }
+    future1.get();
+    spdlog::info("Job done");
 
     gStop = true;
     workerThread.join();
