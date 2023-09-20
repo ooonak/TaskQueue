@@ -58,11 +58,13 @@ int main()
     //auto future2 = queue.postTask(job2);
     //auto future3 = queue.postTask(job3);
 
-    std::future_status status;
-    do {
-      status = future1.wait_for(333ms);
-      spdlog::info("Waiting for job");
-    } while (status != std::future_status::ready);
+    const auto start = std::chrono::system_clock::now();
+    spdlog::info("Waiting for job");
+
+    while (future1.wait_for(1ms) != std::future_status::ready) {}
+
+    const auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - start).count();
+    spdlog::info("Waited for {}ms, reault ready", elapsed);
 
     future1.get();
     spdlog::info("Job done");
