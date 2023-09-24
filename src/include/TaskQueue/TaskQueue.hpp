@@ -8,6 +8,8 @@
 #include <thread>
 #include <utility>
 
+#include <iostream>
+
 class TaskQueue
 {
 public:
@@ -44,7 +46,7 @@ public:
       return std::nullopt;
     }
 
-    tasks_.emplace_back([task]() { (*task)(); });
+    tasks_.emplace_back([task](){ (*task)(); }); // A lambda (std::function<void>) that calls the function stored in shared_ptr.
     return result;
   }
 
