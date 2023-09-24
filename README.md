@@ -2,6 +2,9 @@
 ## Idea
 Just playing around, learning stuff, creating a task queue to push jobs across threads.
 
+##
+std::bind stores a copy of the bound arguments.
+
 ## Build & run
 ```bash
 $ cmake -G Ninja -S . -B build -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_BUILD_TYPE=Debug
