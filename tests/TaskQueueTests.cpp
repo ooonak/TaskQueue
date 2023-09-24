@@ -5,7 +5,8 @@
 std::atomic<bool> gStop{false};
 std::atomic<size_t> gCounter{0};
 
-void worker(TaskQueue &queue) {
+void worker(TaskQueue &queue)
+{
   while (not gStop) {
     queue.consume();
   }
@@ -13,7 +14,8 @@ void worker(TaskQueue &queue) {
 
 void job1() { gCounter++; }
 
-TEST(TaskQueue, PushAndPull) {
+TEST(TaskQueue, PushAndPull)
+{
   gStop = false;
   gCounter = 0;
 
@@ -34,7 +36,8 @@ TEST(TaskQueue, PushAndPull) {
   workerThread.join();
 }
 
-TEST(TaskQueue, PushThenPull) {
+TEST(TaskQueue, PushThenPull)
+{
   gStop = false;
   gCounter = 0;
 
@@ -57,7 +60,8 @@ TEST(TaskQueue, PushThenPull) {
   workerThread.join();
 }
 
-TEST(TaskQueue, TestStop) {
+TEST(TaskQueue, TestStop)
+{
   gStop = false;
   gCounter = 0;
 
@@ -79,7 +83,8 @@ TEST(TaskQueue, TestStop) {
   workerThread.join();
 }
 
-TEST(TaskQueue, TestMaxLength) {
+TEST(TaskQueue, TestMaxLength)
+{
   gStop = false;
   gCounter = 0;
 

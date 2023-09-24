@@ -8,12 +8,14 @@
 #include <thread>
 #include <utility>
 
-class TaskQueue {
+class TaskQueue
+{
 public:
   explicit TaskQueue(size_t maxQueueLength) : maxQueueLength_{maxQueueLength} {}
 
   // Should be polled from consumer thread.
-  void consume() {
+  void consume()
+  {
     std::function<void()> task;
     {
       const std::lock_guard<std::mutex> lock(mutex_);
@@ -28,13 +30,14 @@ public:
 
   // Push task to queue for execution in consumer thread.
   template <class Function, class... Args>
-  auto post(Function &&func, Args &&...args) -> std::optional<
-      std::future<typename std::result_of<Function(Args...)>::type>> {
-    using returnType = typename std::result_of<Function(Args...)>::type;
+  auto post(Function &&func, Args &&...args)
+      -> std::optional<std::future<typename std::invoke_result<Function, Args...>::type>>
+  {
+    using invokeResultT = typename std::invoke_result<Function, Args...>::type;
 
-    auto task = std::make_shared<std::packaged_task<returnType()>>(
+    auto task = std::make_shared<std::packaged_task<invokeResultT()>>(
         std::bind(std::forward<Function>(func), std::forward<Args>(args)...));
-    std::future<returnType> result = task->get_future();
+    std::future<invokeResultT> result = task->get_future();
 
     const std::lock_guard<std::mutex> lock(mutex_);
     if (stop_ == true || tasks_.size() >= maxQueueLength_) {
@@ -45,7 +48,8 @@ public:
     return result;
   }
 
-  void stop() {
+  void stop()
+  {
     const std::lock_guard<std::mutex> lock(mutex_);
     stop_ = true;
   }
