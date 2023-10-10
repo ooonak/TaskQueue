@@ -1,4 +1,5 @@
 #include "TaskQueue/TaskQueue.hpp"
+#include "TaskQueue/Observer.hpp"
 #include "spdlog/spdlog.h"
 #include <atomic>
 #include <chrono>
