@@ -6,6 +6,7 @@ option(BUILD_TESTS "Build tests" ON)
 
 include(GNUInstallDirs)
 
+find_package(Threads REQUIRED)
 find_package(spdlog REQUIRED)
 
 set(CMAKE_CXX_STANDARD 17)
@@ -24,6 +25,7 @@ endif()
 
 message(STATUS "CXX flags: ${CMAKE_CXX_FLAGS}")
 
+add_subdirectory(ccblib)
 add_subdirectory(src)
 add_subdirectory(example)
 

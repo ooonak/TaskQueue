@@ -1,4 +1,5 @@
 #include "TaskQueue/TaskQueue.hpp"
+#include "ccb/ccb.h"
 #include "spdlog/spdlog.h"
 #include <atomic>
 #include <chrono>
@@ -9,6 +10,11 @@ using namespace std::chrono_literals;
 
 std::atomic<bool> gStop{false};
 std::atomic<unsigned> gCounter{0};
+
+void basic_ccb_test()
+{
+
+}
 
 void worker(TaskQueue &queue)
 {

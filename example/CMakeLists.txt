@@ -10,6 +10,7 @@ target_link_libraries(${PROJECT_NAME}
     PRIVATE 
     TaskQueue::TaskQueue
     spdlog::spdlog
+    CCB::CCB
 )
 
 install(TARGETS ${PROJECT_NAME} DESTINATION bin)

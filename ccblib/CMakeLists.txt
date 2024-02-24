@@ -2,15 +2,18 @@ cmake_minimum_required(VERSION 3.25)
 
 project(CCB VERSION 0.0.1 LANGUAGES C)
 
-add_library(${PROJECT_NAME} SHARED
+add_library(${PROJECT_NAME}
     ccb.c
+)
+
+target_link_libraries(${PROJECT_NAME}
+  PRIVATE
+  Threads::Threads
 )
 
 target_include_directories(${PROJECT_NAME}
     PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-    #$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
-    #$<BUILD_INTERFACE:${PROJECT_BINARY_DIR}>
     $<INSTALL_INTERFACE:include>
 )
 
