@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.25)
 
-project(TaskQueue LANGUAGES CXX)
+project(TaskQueue LANGUAGES C CXX)
 
 option(BUILD_TESTS "Build tests" ON)
 
@@ -25,7 +25,7 @@ endif()
 
 message(STATUS "CXX flags: ${CMAKE_CXX_FLAGS}")
 
-add_subdirectory(ccblib)
+add_subdirectory(ccb)
 add_subdirectory(src)
 add_subdirectory(example)
 

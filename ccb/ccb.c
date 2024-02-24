@@ -22,8 +22,8 @@ static atomic_bool do_stop = false;
 static atomic_bool request_waiting = false;
 static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
-static const char * const MSG_TEMPL =
-    "Everything ended succesfully, off course the result is \"Hello World!\" (your input was \"%s\") :-)";
+static const char *const MSG_TEMPL =
+    "Everything ended succesfully, off course the result is \"Hello World!\" (your input was \"%s\") :-) ";
 
 void ccb_error_example(int error_code, const char *error_descr, void *context)
 {
@@ -39,11 +39,11 @@ void ccb_result_example(char *output, void *context)
   }
 }
 
-CCB_ERR_CODE_T request_action_1(const char *input, unsigned int sleep_seconds, bool do_fail, ccb_error_cb_t error_cb,
-                                ccb_result_cb_t result_cb, void *context)
+CCB_ERR_CODE_T ccb_request_action(const char *input, unsigned int sleep_seconds, bool do_fail, ccb_error_cb_t error_cb,
+                                  ccb_result_cb_t result_cb, void *context)
 {
   if (error_cb == NULL || result_cb == NULL || input == NULL) {
-    printf("%s() Invalid input", __func__);
+    printf("[%d] %s() Invalid input (context: %p)\n", gettid(), __func__, context);
     return CCB_ERROR;
   }
 
@@ -69,7 +69,7 @@ CCB_ERR_CODE_T request_action_1(const char *input, unsigned int sleep_seconds, b
   return CCB_OK;
 }
 
-void run()
+void ccb_run()
 {
   CCB_REQUEST_T request;
 
@@ -102,9 +102,24 @@ void run()
         request.result_cb(msg, request.context);
       }
 
+      if (request.input != NULL) {
+        free(request.input);
+        request.input = NULL;
+      }
+
       printf("[%d] %s() Action completed, done (context: %p)\n", gettid(), __func__, request.context);
     }
   }
+
+  if (next_request.input == NULL) {
+    free(next_request.input);
+  }
+
+  printf("[%d] %s() Stopped, bye\n", gettid(), __func__);
 }
 
-void stop() { do_stop = true; }
+void ccb_stop()
+{
+  printf("[%d] %s() Signalled to stop\n", gettid(), __func__);
+  do_stop = true;
+}

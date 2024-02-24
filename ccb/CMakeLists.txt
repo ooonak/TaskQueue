@@ -32,4 +32,3 @@ install(DIRECTORY include/ccb
         DESTINATION include
         COMPONENT Devel
 )
-

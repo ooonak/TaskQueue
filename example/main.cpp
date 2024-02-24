@@ -13,7 +13,31 @@ std::atomic<unsigned> gCounter{0};
 
 void basic_ccb_test()
 {
+  std::thread ccbThread(ccb_run);
+  spdlog::info("Started CCB worker thread");
 
+  if (ccb_request_action("Input message 1", 1, false, ccb_error_example, ccb_result_example, nullptr) == CCB_OK)
+  {
+    spdlog::info("Pushed first job");
+  }
+
+  if (ccb_request_action("Input message 2", 1, false, ccb_error_example, ccb_result_example, nullptr) == CCB_OK)
+  {
+    spdlog::info("Pushed first job");
+  }
+
+  if (ccb_request_action("Input message 3", 1, true, ccb_error_example, ccb_result_example, nullptr) == CCB_ERROR)
+  {
+    spdlog::info("Pushed third job");
+  }
+
+  int i=5;
+  while(--i) { std::this_thread::sleep_for(1000ms); }
+
+  spdlog::info("Signalling CCB worker thread to stop");
+
+  ccb_stop();
+  ccbThread.join();
 }
 
 void worker(TaskQueue &queue)
@@ -100,6 +124,9 @@ private:
 
 int main()
 {
+  basic_ccb_test();
+  return 0;
+
   TaskQueue queue{10};
 
   spdlog::info("About to start consumer from thread {}", std::hash<std::thread::id>{}(std::this_thread::get_id()));
