@@ -1,0 +1,9 @@
+{
+    "version": 4,
+    "vendor": {
+        "conan": {}
+    },
+    "include": [
+        "/home/swu/projects/TaskQueue/scratch/build/Release/generators/CMakePresets.json"
+    ]
+}
